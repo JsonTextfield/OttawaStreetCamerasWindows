@@ -78,6 +78,7 @@ namespace OttawaStreetCameras {
         }
         public void update(BitmapImage bmp) {
             image.Source = bmp;
+            //lol
         }
     }
 }
