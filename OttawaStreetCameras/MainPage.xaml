@@ -6,6 +6,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <ListView x:Name="listView" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Top" SelectionChanged="listView_SelectionChanged"/>
-
+    <RelativePanel>
+        <AutoSuggestBox RelativePanel.AlignLeftWithPanel="True" 
+                        RelativePanel.AlignRightWithPanel="True" 
+                        RelativePanel.AlignTopWithPanel="True" 
+                        Name="searchBox" PlaceholderText="Search" 
+                        SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                        TextChanged="AutoSuggestBox_TextChanged"
+                        QuerySubmitted="AutoSuggestBox_QuerySubmitted">
+            <AutoSuggestBox.QueryIcon>
+                <SymbolIcon Symbol="Find"/>
+            </AutoSuggestBox.QueryIcon>
+        </AutoSuggestBox>
+        
+        <ListView Name="listView" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="searchBox" HorizontalAlignment="Stretch" SelectionChanged="listView_SelectionChanged"/>
+    </RelativePanel>
 </Page>
