@@ -6,6 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <ListView x:Name="listView" HorizontalAlignment="Stretch" Margin="10,10,10,10" Height="500"  VerticalAlignment="Top" SelectionChanged="listView_SelectionChanged"/>
+    <ListView x:Name="listView" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Top" SelectionChanged="listView_SelectionChanged"/>
 
 </Page>
