@@ -4,6 +4,7 @@ using System.Net;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -29,15 +30,13 @@ namespace OttawaStreetCameras {
             SESSION_ID = response.Headers["Set-Cookie"];
         }
         public async void getFile() {
-            string filename = "ints.json";
+            string filename = "camera_list.json";
             StorageFile sFile = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + filename);
             string text = await Windows.Storage.FileIO.ReadTextAsync(sFile);
 
             JsonArray array = JsonValue.Parse(text).GetArray();
             for (uint i = 0; i < array.Count; i++) {
-                string name = array.GetObjectAt(i).GetNamedString("name");
-                string id = array.GetObjectAt(i).GetNamedString("id");
-                Camera cam = new Camera(name, id);
+                Camera cam = new Camera(array.GetObjectAt(i));
                 listOfCameras.Add(cam);
             }
             refresh();
@@ -55,6 +54,8 @@ namespace OttawaStreetCameras {
         protected override void OnNavigatedTo(NavigationEventArgs e) {
             base.OnNavigatedTo(e);
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            ApplicationView appView = ApplicationView.GetForCurrentView();
+            appView.Title = "";
         }
         private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args) {
             // Only get results when it was a user typing,
