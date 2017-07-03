@@ -91,6 +91,10 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <Content Include="Assets\ic_photo_camera_white_48dp_2x.png" />
     <Content Include="Assets\ints.json" />
+    <None Include="Assets\cameralist.json" />
+    <Content Include="Assets\camera_list.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
