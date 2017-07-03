@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
@@ -18,14 +19,15 @@ namespace OttawaStreetCameras {
     /// </summary>
 
     public sealed partial class CameraPage : Page {
-        public static Boolean RUNNING;
+        public static bool RUNNING;
         Camera camera;
         public CameraPage() {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+            
         }
         public async void getImage(Camera camera) {
-            string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.id;
+            string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.num;
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(url);
@@ -50,7 +52,7 @@ namespace OttawaStreetCameras {
             }
 
         }
-
+        
         protected override void OnNavigatedTo(NavigationEventArgs e) {
             base.OnNavigatedTo(e);
             RUNNING = true;
@@ -58,6 +60,7 @@ namespace OttawaStreetCameras {
             camera = (Camera)e.Parameter;
             ApplicationView appView = ApplicationView.GetForCurrentView();
             appView.Title = camera.name;
+            
             getImage(camera);
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;

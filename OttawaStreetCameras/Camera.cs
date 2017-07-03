@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Data.Sqlite;
+using System.Diagnostics;
 using Windows.Data.Json;
 
 namespace OttawaStreetCameras {
@@ -12,14 +9,17 @@ namespace OttawaStreetCameras {
         public double lat, lng;
 
         
-        public Camera(JsonObject jsonObject) {
-            name = jsonObject.GetNamedString("description");
-            nameFr = jsonObject.GetNamedString("descriptionFr");
-            type = jsonObject.GetNamedString("type");
-            id = (int) jsonObject.GetNamedNumber("id");
-            num = (int)jsonObject.GetNamedNumber("number");
-            lat = jsonObject.GetNamedNumber("latitude");
-            lng = jsonObject.GetNamedNumber("longitude");
+        public Camera(SqliteDataReader query) {
+            name = query.GetString(query.GetOrdinal("name"));
+            nameFr = query.GetString(query.GetOrdinal("nameFr"));
+            type = query.GetString(query.GetOrdinal("owner"));
+            id = query.GetInt32(query.GetOrdinal("id"));
+            num = query.GetInt32(query.GetOrdinal("num"));
+            if (type.Equals("MTO")) {
+                num += 2000;
+            }
+            lat = query.GetDouble(query.GetOrdinal("latitude"));
+            lng = query.GetDouble(query.GetOrdinal("longitude"));
         }
 
         public override string ToString() {
