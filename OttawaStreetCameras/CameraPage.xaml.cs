@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,27 +13,33 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace OttawaStreetCameras {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
 
     public sealed partial class CameraPage : Page {
-        public static bool RUNNING;
-        Camera camera;
+        private bool RUNNING;
+        private string sessionId;
+
         public CameraPage() {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
-            
+        }
+        public async void getSessionId(Camera camera) {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage res = await client.GetAsync("https://traffic.ottawa.ca/map");
+
+            IEnumerable<string> values;
+            if (res.Headers.TryGetValues("Set-Cookie", out values)) {
+                sessionId = values.First();
+                getImage(camera);
+            }
         }
         public async void getImage(Camera camera) {
             string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.num;
+            HttpClient outClient = new HttpClient();
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(url);
-            byte[] img = await response.Content.ReadAsByteArrayAsync();
+            outClient.DefaultRequestHeaders.Add("Cookie", sessionId);
+
+            byte[] img = await outClient.GetByteArrayAsync(url);
             InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream();
             DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
 
@@ -42,9 +50,9 @@ namespace OttawaStreetCameras {
             b.SetSource(randomAccessStream);
 
             image.Source = b;
-
             if (RUNNING) {
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
+
                 getImage(camera);
             }
             else {
@@ -57,11 +65,11 @@ namespace OttawaStreetCameras {
             base.OnNavigatedTo(e);
             RUNNING = true;
 
-            camera = (Camera)e.Parameter;
+            Camera camera = (Camera)e.Parameter;
             ApplicationView appView = ApplicationView.GetForCurrentView();
             appView.Title = camera.name;
-            
-            getImage(camera);
+
+            getSessionId(camera);
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
         }

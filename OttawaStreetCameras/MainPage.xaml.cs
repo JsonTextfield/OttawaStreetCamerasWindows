@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
@@ -17,18 +19,11 @@ namespace OttawaStreetCameras {
     /// </summary>
     /// 
     public sealed partial class MainPage : Page {
-        public static string SESSION_ID;
         private List<Camera> listOfCameras = new List<Camera>();
 
         public MainPage() {
             this.InitializeComponent();
             getFile();
-            getSessionId();
-        }
-        public async void getSessionId() {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://traffic.ottawa.ca/map");
-            WebResponse response = await request.GetResponseAsync();
-            SESSION_ID = response.Headers["Set-Cookie"];
         }
 
         public async void getFile() {
