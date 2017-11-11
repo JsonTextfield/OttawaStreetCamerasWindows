@@ -10,6 +10,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -18,22 +19,36 @@ namespace OttawaStreetCameras {
     public sealed partial class CameraPage : Page {
         private bool RUNNING;
         private string sessionId;
-
+        private HashSet<Camera> cameras;
         public CameraPage() {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
         }
-        public async void getSessionId(Camera camera) {
+        public async void getSessionId() {
             HttpClient client = new HttpClient();
             HttpResponseMessage res = await client.GetAsync("https://traffic.ottawa.ca/map");
 
             IEnumerable<string> values;
             if (res.Headers.TryGetValues("Set-Cookie", out values)) {
                 sessionId = values.First();
-                getImage(camera);
+                foreach(Camera camera in cameras) {
+                    Image image = new Image();
+                    image.CacheMode = new BitmapCache();
+                    image.Stretch = Stretch.Uniform;
+                    image.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth/4-1;
+                    grid.Children.Add(image);
+                    getImage(camera, image);
+                }
             }
+
+            /*    <Image x:Name="image" 
+               CacheMode="BitmapCache" 
+               Stretch="Uniform" 
+               MaxHeight="500" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/>*/
         }
-        public async void getImage(Camera camera) {
+        public async void getImage(Camera camera, Image image) {
             string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.num;
             HttpClient outClient = new HttpClient();
 
@@ -53,7 +68,7 @@ namespace OttawaStreetCameras {
             if (RUNNING) {
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
 
-                getImage(camera);
+                getImage(camera, image);
             }
             else {
                 Debug.WriteLine(url);
@@ -64,12 +79,17 @@ namespace OttawaStreetCameras {
         protected override void OnNavigatedTo(NavigationEventArgs e) {
             base.OnNavigatedTo(e);
             RUNNING = true;
-
-            Camera camera = (Camera)e.Parameter;
+            cameras = (HashSet<Camera>) e.Parameter;
             ApplicationView appView = ApplicationView.GetForCurrentView();
-            appView.Title = camera.name;
+            string s = "";
+            foreach(Camera camera in cameras) {
+                s += camera.name+", ";
+            }
+            if (s.Length > 2) {
+                appView.Title = s.Substring(0, s.Length - 2);
+            }
 
-            getSessionId(camera);
+            getSessionId();
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
         }

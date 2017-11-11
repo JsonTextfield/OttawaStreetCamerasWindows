@@ -1,11 +1,7 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using Windows.Storage;
+using Windows.Data.Json;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
@@ -20,13 +16,45 @@ namespace OttawaStreetCameras {
     /// 
     public sealed partial class MainPage : Page {
         private List<Camera> listOfCameras = new List<Camera>();
-
+        private HashSet<Camera> selectedCameras = new HashSet<Camera>();
         public MainPage() {
             this.InitializeComponent();
             getFile();
         }
 
         public async void getFile() {
+            string url = "http://traffic.ottawa.ca/map/camera_list";
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            //DataWriter writer = new DataWriter(randomAccessStream.GetOutputStreamAt(0));
+
+            //writer.WriteBytes(img);
+            //await writer.StoreAsync();
+            var jsonString = await response.Content.ReadAsStringAsync();
+
+            JsonArray root = JsonValue.Parse(jsonString).GetArray();
+            for (uint i = 0; i < root.Count; i++) {
+                Camera camera = new Camera();
+
+                camera.nameFr = root.GetObjectAt(i).GetNamedString("descriptionFr");
+                camera.name = root.GetObjectAt(i).GetNamedString("description");
+                camera.type = root.GetObjectAt(i).GetNamedString("type");
+                camera.num = camera.type.Equals("MTO")? (int)root.GetObjectAt(i).GetNamedNumber("number") +2000: (int) root.GetObjectAt(i).GetNamedNumber("number");
+                camera.id = (int) root.GetObjectAt(i).GetNamedNumber("id");
+                camera.lng = (double) root.GetObjectAt(i).GetNamedNumber("longitude");
+                camera.lat = (double) root.GetObjectAt(i).GetNamedNumber("latitude");
+                
+
+                listOfCameras.Add(camera);
+                
+            }
+            searchBox.PlaceholderText = string.Format("Search from {0} locations", root.Count);
+            refresh();
+
+        }
+
+        /*public async void getFile() {
 
             string filename = "camera_list.db";
             StorageFile sFile = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + filename);
@@ -42,15 +70,23 @@ namespace OttawaStreetCameras {
             }
             db.Close();
             refresh();
-        }
+        }*/
 
         public void refresh() {
             listView.ItemsSource = listOfCameras;
         }
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            Camera param = (Camera)e.AddedItems[0];
-            this.Frame.Navigate(typeof(CameraPage), param);
+            if (e.AddedItems.Count > 0) {
+                selectedCameras.Add((Camera)e.AddedItems[0]);
+            }
+            if (e.RemovedItems.Count > 0) {
+                selectedCameras.Remove((Camera)e.RemovedItems[0]);
+            }
+
+        }
+        public void openCameras() {
+            this.Frame.Navigate(typeof(CameraPage), selectedCameras);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e) {
@@ -88,6 +124,16 @@ namespace OttawaStreetCameras {
                 });
                 // Use args.QueryText to determine what to do.
             }
+        }
+
+        private void listView_ItemClick(object sender, ItemClickEventArgs e) {
+            Debug.WriteLine("click");
+            Camera param = (Camera)e.ClickedItem;
+            this.Frame.Navigate(typeof(CameraPage), param);
+        }
+
+        private void openCams_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
+            openCameras();
         }
     }
 }

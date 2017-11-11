@@ -8,7 +8,7 @@ namespace OttawaStreetCameras {
         public int id, num;
         public double lat, lng;
 
-        
+        public Camera() { }
         public Camera(SqliteDataReader query) {
             name = query.GetString(query.GetOrdinal("name"));
             nameFr = query.GetString(query.GetOrdinal("nameFr"));

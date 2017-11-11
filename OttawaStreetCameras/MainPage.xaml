@@ -20,6 +20,19 @@
             </AutoSuggestBox.QueryIcon>
         </AutoSuggestBox>
         
-        <ListView Name="listView" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="searchBox" HorizontalAlignment="Stretch" SelectionChanged="listView_SelectionChanged"/>
+        <ListView Name="listView" 
+                  IsMultiSelectCheckBoxEnabled="True" 
+                  SelectionMode="Multiple" 
+                  SelectionChanged="listView_SelectionChanged" 
+                  RelativePanel.AlignLeftWithPanel="True" 
+                  RelativePanel.AlignRightWithPanel="True" 
+                  RelativePanel.Below="searchBox" 
+                  HorizontalAlignment="Stretch"/>
+        <Button Name="openCams"
+                RelativePanel.AlignBottomWithPanel="True"
+                RelativePanel.AlignRightWithPanel="True"
+                Click="openCams_Click"
+                Width="100px"
+                Height="50px"/>
     </RelativePanel>
 </Page>
