@@ -8,31 +8,42 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <RelativePanel>
-        <AutoSuggestBox RelativePanel.AlignLeftWithPanel="True" 
-                        RelativePanel.AlignRightWithPanel="True" 
-                        RelativePanel.AlignTopWithPanel="True" 
-                        Name="searchBox" PlaceholderText="Search" 
-                        SuggestionChosen="AutoSuggestBox_SuggestionChosen"
-                        TextChanged="AutoSuggestBox_TextChanged"
-                        QuerySubmitted="AutoSuggestBox_QuerySubmitted">
+
+        <CommandBar 
+            Name="menu"
+            Background="#777777"
+            RelativePanel.AlignLeftWithPanel="True" 
+            RelativePanel.AlignRightWithPanel="True"
+            RelativePanel.AlignTopWithPanel="True">
+            <AppBarButton 
+                Name="openCams"
+                Visibility="Collapsed"
+                Content="Show cameras"
+                Width="Auto"
+                Height="Auto"
+                Click="openCams_Click"/>
+
+        </CommandBar>
+
+        <AutoSuggestBox 
+            RelativePanel.Below="menu"
+            Name="searchBox"
+            RelativePanel.AlignLeftWithPanel="True" 
+            RelativePanel.AlignRightWithPanel="True" 
+            SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+            TextChanged="AutoSuggestBox_TextChanged"
+            QuerySubmitted="AutoSuggestBox_QuerySubmitted">
             <AutoSuggestBox.QueryIcon>
                 <SymbolIcon Symbol="Find"/>
             </AutoSuggestBox.QueryIcon>
         </AutoSuggestBox>
-        
-        <ListView Name="listView" 
+
+        <ListView Name="listView"
                   IsMultiSelectCheckBoxEnabled="True" 
                   SelectionMode="Multiple" 
                   SelectionChanged="listView_SelectionChanged" 
                   RelativePanel.AlignLeftWithPanel="True" 
                   RelativePanel.AlignRightWithPanel="True" 
-                  RelativePanel.Below="searchBox" 
-                  HorizontalAlignment="Stretch"/>
-        <Button Name="openCams"
-                RelativePanel.AlignBottomWithPanel="True"
-                RelativePanel.AlignRightWithPanel="True"
-                Click="openCams_Click"
-                Width="100px"
-                Height="50px"/>
+                  RelativePanel.Below="searchBox"/>
     </RelativePanel>
 </Page>

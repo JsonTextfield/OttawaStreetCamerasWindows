@@ -19,7 +19,7 @@ namespace OttawaStreetCameras {
     public sealed partial class CameraPage : Page {
         private bool RUNNING;
         private string sessionId;
-        private HashSet<Camera> cameras;
+        private List<Camera> cameras;
         public CameraPage() {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
@@ -32,21 +32,13 @@ namespace OttawaStreetCameras {
             if (res.Headers.TryGetValues("Set-Cookie", out values)) {
                 sessionId = values.First();
                 foreach(Camera camera in cameras) {
-                    Image image = new Image();
-                    image.CacheMode = new BitmapCache();
-                    image.Stretch = Stretch.Uniform;
-                    image.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth/4-1;
-                    grid.Children.Add(image);
-                    getImage(camera, image);
+                    CameraItem camItem = new CameraItem();
+                    camItem.Label.Text = camera.name;
+                    camItem.Source.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth / 4 - 1;
+                    grid.Children.Add(camItem);
+                    getImage(camera, camItem.Source);
                 }
             }
-
-            /*    <Image x:Name="image" 
-               CacheMode="BitmapCache" 
-               Stretch="Uniform" 
-               MaxHeight="500" 
-               HorizontalAlignment="Center" 
-               VerticalAlignment="Center"/>*/
         }
         public async void getImage(Camera camera, Image image) {
             string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.num;
@@ -79,20 +71,12 @@ namespace OttawaStreetCameras {
         protected override void OnNavigatedTo(NavigationEventArgs e) {
             base.OnNavigatedTo(e);
             RUNNING = true;
-            cameras = (HashSet<Camera>) e.Parameter;
-            ApplicationView appView = ApplicationView.GetForCurrentView();
-            string s = "";
-            foreach(Camera camera in cameras) {
-                s += camera.name+", ";
-            }
-            if (s.Length > 2) {
-                appView.Title = s.Substring(0, s.Length - 2);
-            }
-
+            cameras = (List<Camera>) e.Parameter;
             getSessionId();
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
         }
+
         private void App_BackRequested(object sender, BackRequestedEventArgs e) {
             RUNNING = false;
             Frame rootFrame = Window.Current.Content as Frame;

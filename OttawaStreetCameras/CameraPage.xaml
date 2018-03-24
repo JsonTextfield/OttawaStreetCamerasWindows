@@ -8,8 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <ScrollViewer>
-        <VariableSizedWrapGrid Name="grid"  Orientation="Horizontal" HorizontalAlignment="Center" >
-        </VariableSizedWrapGrid>
+        <VariableSizedWrapGrid Name="grid"  Orientation="Horizontal" HorizontalAlignment="Center" />
 
     </ScrollViewer>
 
