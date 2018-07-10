@@ -15,7 +15,8 @@ namespace OttawaStreetCameras {
     /// </summary>
     /// 
     public sealed partial class MainPage : Page {
-        private List<Camera> listOfCameras = new List<Camera>();
+        private List<Neighbourhood> neighbourhoods = new List<Neighbourhood>();
+        private List<Camera> cameras = new List<Camera>();
         private List<Camera> selectedCameras = new List<Camera>();
 
         private const int maxCameras = 10;
@@ -34,6 +35,29 @@ namespace OttawaStreetCameras {
             return selectedCameras.Contains(camera);
         }
 
+        public async void getNeighbourhoods() {
+            string url = "http://data.ottawa.ca/dataset/302ade92-51ec-4b26-a715-627802aa62a8/resource/f1163794-de80-4682-bda5-b13034984087/download/onsboundariesgen1.shp.json";
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+
+            JsonArray root = JsonValue.Parse(jsonString).GetObject().GetNamedArray("features");
+            
+            for (uint i = 0; i < root.Count; i++) {
+                neighbourhoods.Add(new Neighbourhood(root.GetObjectAt(i)));
+            }
+            foreach (Camera camera in cameras) {
+                foreach (Neighbourhood neighbourhood in neighbourhoods) {
+                    if (neighbourhood.ContainsCamera(camera)) {
+                        camera.neighbourhood = neighbourhood.GetName();
+                        break;
+                    }
+                }
+            }
+        }
+
         public async void downloadJson() {
             string url = "https://traffic.ottawa.ca/map/camera_list";
             HttpClient client = new HttpClient();
@@ -43,16 +67,16 @@ namespace OttawaStreetCameras {
 
             JsonArray root = JsonValue.Parse(jsonString).GetArray();
             for (uint i = 0; i < root.Count; i++) {
-                listOfCameras.Add(new Camera(root.GetObjectAt(i)));
+                cameras.Add(new Camera(root.GetObjectAt(i)));
             }
-            listOfCameras.Sort();
+            cameras.Sort();
             searchBox.PlaceholderText = string.Format("Search from {0} locations", root.Count);
             refresh();
 
         }
 
         public void refresh() {
-            listView.ItemsSource = listOfCameras;
+            listView.ItemsSource = cameras;
         }
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -83,7 +107,7 @@ namespace OttawaStreetCameras {
             // otherwise assume the value got filled in by TextMemberPath
             // or the handler for SuggestionChosen.
             /*if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput) {
-                sender.ItemsSource = listOfCameras.FindAll(delegate (Camera cam) {
+                sender.ItemsSource = cameras.FindAll(delegate (Camera cam) {
                     return cam.name.ToLower().Contains(searchBox.Text.ToLower());
                 });
             }
@@ -91,7 +115,7 @@ namespace OttawaStreetCameras {
                 // User selected an item from the suggestion list, take an action on it here.
             }
             else {*/
-            listView.ItemsSource = listOfCameras.FindAll(delegate (Camera cam) {
+            listView.ItemsSource = cameras.FindAll(delegate (Camera cam) {
                 return cam.name.ToLower().Contains(searchBox.Text.ToLower());
             });
             // Use args.QueryText to determine what to do.
@@ -111,7 +135,7 @@ namespace OttawaStreetCameras {
                 // User selected an item from the suggestion list, take an action on it here.
             }
             else {
-                listView.ItemsSource = listOfCameras.FindAll(delegate (Camera cam) {
+                listView.ItemsSource = cameras.FindAll(delegate (Camera cam) {
                     return cam.name.ToLower().Contains(searchBox.Text.ToLower());
                 });
                 // Use args.QueryText to determine what to do.

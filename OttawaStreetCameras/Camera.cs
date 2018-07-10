@@ -10,8 +10,9 @@ namespace OttawaStreetCameras {
         public string name, nameFr, type;
         public int id, num;
         public double lat, lng;
-
-        public Camera() { }
+        public string neighbourhood;
+        public bool isFavourite = false;
+        public bool isVisible = true;
 
         public Camera(JsonObject jsonObject) {
 
@@ -42,6 +43,15 @@ namespace OttawaStreetCameras {
 
         public override string ToString() {
             return name;
+        }
+
+        public string GetName() {
+            return (Windows.System.UserProfile.GlobalizationPreferences.Languages[0].Contains("fr")) ? nameFr : name;
+        }
+
+        public string GetSortableName() {
+            Regex rgx = new Regex("\\W");
+            return rgx.Replace(GetName(), "");
         }
 
         public int CompareTo(Camera other) {
