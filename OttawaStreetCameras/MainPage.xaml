@@ -11,7 +11,7 @@
 
         <CommandBar 
             Name="menu"
-            Background="#777777"
+            Background="{ThemeResource SystemAccentColor}"
             RelativePanel.AlignLeftWithPanel="True" 
             RelativePanel.AlignRightWithPanel="True"
             RelativePanel.AlignTopWithPanel="True">

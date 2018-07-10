@@ -26,15 +26,6 @@ namespace OttawaStreetCameras {
             downloadJson();
         }
 
-        public bool selectCamera(Camera camera) {
-            if (selectedCameras.Contains(camera)) {
-                selectedCameras.Remove(camera);
-            } else if (selectedCameras.Count < maxCameras) {
-                selectedCameras.Add(camera);
-            }
-            return selectedCameras.Contains(camera);
-        }
-
         public async void getNeighbourhoods() {
             string url = "http://data.ottawa.ca/dataset/302ade92-51ec-4b26-a715-627802aa62a8/resource/f1163794-de80-4682-bda5-b13034984087/download/onsboundariesgen1.shp.json";
 
@@ -44,7 +35,7 @@ namespace OttawaStreetCameras {
             var jsonString = await response.Content.ReadAsStringAsync();
 
             JsonArray root = JsonValue.Parse(jsonString).GetObject().GetNamedArray("features");
-            
+
             for (uint i = 0; i < root.Count; i++) {
                 neighbourhoods.Add(new Neighbourhood(root.GetObjectAt(i)));
             }
@@ -84,15 +75,18 @@ namespace OttawaStreetCameras {
             }
             if (e.AddedItems.Count > 0) {
                 openCams.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                selectedCameras.Add((Camera)e.AddedItems[0]);
+                List<Camera> list = new List<Camera>();
+                for (int i = 0; i < e.AddedItems.Count; i++){
+                    list.Add((Camera)e.AddedItems[i]);
+                }
+                selectedCameras.AddRange(list);
             }
             if (e.RemovedItems.Count > 0) {
-                selectedCameras.Remove((Camera)e.RemovedItems[0]);
+                selectedCameras.RemoveAll(camera => e.RemovedItems.Contains(camera));
                 if (selectedCameras.Count == 0) {
                     openCams.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
                 }
             }
-
         }
         public void openCameras() {
             this.Frame.Navigate(typeof(CameraPage), selectedCameras);
@@ -133,8 +127,7 @@ namespace OttawaStreetCameras {
         private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args) {
             if (args.ChosenSuggestion != null) {
                 // User selected an item from the suggestion list, take an action on it here.
-            }
-            else {
+            } else {
                 listView.ItemsSource = cameras.FindAll(delegate (Camera cam) {
                     return cam.name.ToLower().Contains(searchBox.Text.ToLower());
                 });
@@ -151,6 +144,6 @@ namespace OttawaStreetCameras {
         private void openCams_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
             openCameras();
         }
-        
+
     }
 }

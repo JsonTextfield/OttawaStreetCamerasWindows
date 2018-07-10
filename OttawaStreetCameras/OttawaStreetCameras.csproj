@@ -103,6 +103,7 @@
       <DependentUpon>CameraPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Camera.cs" />
+    <Compile Include="LatLng.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
