@@ -19,14 +19,14 @@ namespace OttawaStreetCameras {
         private List<Camera> cameras = new List<Camera>();
         private List<Camera> selectedCameras = new List<Camera>();
 
-        private const int maxCameras = 10;
+        private const int maxCameras = int.MaxValue;
 
         public MainPage() {
             this.InitializeComponent();
-            downloadJson();
+            DownloadJson();
         }
 
-        public async void getNeighbourhoods() {
+        private async void GetNeighbourhoods() {
             string url = "http://data.ottawa.ca/dataset/302ade92-51ec-4b26-a715-627802aa62a8/resource/f1163794-de80-4682-bda5-b13034984087/download/onsboundariesgen1.shp.json";
 
             HttpClient client = new HttpClient();
@@ -49,7 +49,7 @@ namespace OttawaStreetCameras {
             }
         }
 
-        public async void downloadJson() {
+        private async void DownloadJson() {
             string url = "https://traffic.ottawa.ca/map/camera_list";
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(url);
@@ -61,6 +61,7 @@ namespace OttawaStreetCameras {
                 cameras.Add(new Camera(root.GetObjectAt(i)));
             }
             cameras.Sort();
+            GetNeighbourhoods();
             searchBox.PlaceholderText = string.Format("Search from {0} locations", root.Count);
             refresh();
 
@@ -88,7 +89,7 @@ namespace OttawaStreetCameras {
                 }
             }
         }
-        public void openCameras() {
+        private void OpenCameras() {
             this.Frame.Navigate(typeof(CameraPage), selectedCameras);
         }
 
@@ -110,7 +111,7 @@ namespace OttawaStreetCameras {
             }
             else {*/
             listView.ItemsSource = cameras.FindAll(delegate (Camera cam) {
-                return cam.name.ToLower().Contains(searchBox.Text.ToLower());
+                return cam.GetSortableName().ToLower().Contains(searchBox.Text.ToLower());
             });
             // Use args.QueryText to determine what to do.
             //}
@@ -142,7 +143,7 @@ namespace OttawaStreetCameras {
         }
 
         private void openCams_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
-            openCameras();
+            OpenCameras();
         }
 
     }
