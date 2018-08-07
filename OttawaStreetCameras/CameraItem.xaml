@@ -9,15 +9,15 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <RelativePanel>
+    <RelativePanel HorizontalAlignment="Center" Height="300" Margin="0,0,0,0" VerticalAlignment="Center">
         <Image 
             Name="image"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             RelativePanel.AlignHorizontalCenterWithPanel="True" 
             RelativePanel.AlignVerticalCenterWithPanel="True"/>
-        
-        <Border Background="Black"
+
+        <Border Background="#55000000"
             RelativePanel.AlignBottomWithPanel="True" 
             RelativePanel.AlignHorizontalCenterWithPanel="True">
             <TextBlock 

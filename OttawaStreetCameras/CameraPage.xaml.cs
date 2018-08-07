@@ -33,7 +33,7 @@ namespace OttawaStreetCameras {
                 sessionId = values.First();
                 foreach(Camera camera in cameras) {
                     CameraItem camItem = new CameraItem();
-                    camItem.Label.Text = camera.name;
+                    camItem.Label.Text = camera.GetName();
                     camItem.Source.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth / 4 - 1;
                     grid.Children.Add(camItem);
                     getImage(camera, camItem.Source);

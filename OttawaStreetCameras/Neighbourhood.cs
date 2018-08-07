@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Data.Json;
 
-namespace OttawaStreetCameras {
-    public class Neighbourhood {
-        private string name, nameFr;
-        public readonly int id;
-        List<List<LatLng>> boundaries = new List<List<LatLng>>();
+namespace OttawaStreetCameras
+{
+    public class Neighbourhood : BilingualObject
+    {
+        private int id;
+        private List<List<LatLng>> boundaries = new List<List<LatLng>>();
 
-        public Neighbourhood(JsonObject vals) {
+        public Neighbourhood(JsonObject vals)
+        {
             JsonObject props = vals.GetNamedObject("properties");
             name = props.GetNamedString("Name");
-            nameFr = props.GetNamedString("Name_FR");
+            nameFr = props.GetNamedValue("Name_FR") == null ? name : props.GetNamedValue("Name_FR").ToString();
             id = (int)props.GetNamedNumber("ONS_ID");
 
             JsonObject geo = vals.GetNamedObject("geometry");
@@ -33,7 +37,8 @@ namespace OttawaStreetCameras {
             }
         }
 
-        public bool ContainsCamera(Camera camera) {
+        public bool ContainsCamera(Camera camera)
+        {
             int intersectCount = 0;
             LatLng cameraLocation = new LatLng(camera.lat, camera.lng);
 
@@ -47,7 +52,8 @@ namespace OttawaStreetCameras {
             return ((intersectCount % 2) == 1); // odd = inside, even = outside
         }
 
-        private bool RayCastIntersect(LatLng location, LatLng vertA, LatLng vertB) {
+        private bool RayCastIntersect(LatLng location, LatLng vertA, LatLng vertB)
+        {
 
             double aY = vertA.latitude;
             double bY = vertB.latitude;
@@ -67,14 +73,5 @@ namespace OttawaStreetCameras {
 
             return x > pX;
         }
-
-        public string GetName() {
-            return true ? nameFr : name;
-        }
-
-        public override string ToString() {
-            return GetName();
-        }
-
     }
 }
