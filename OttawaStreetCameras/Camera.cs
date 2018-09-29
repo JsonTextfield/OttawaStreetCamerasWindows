@@ -1,18 +1,19 @@
 ﻿using Windows.Data.Json;
+using Windows.Devices.Geolocation;
+using Windows.UI.Xaml.Controls.Maps;
 
-namespace OttawaStreetCameras
-{
-    public class Camera : BilingualObject
-    {
+namespace OttawaStreetCameras {
+    public class Camera : BilingualObject {
         public string type;
-        public int id, num;
-        public double lat, lng;
+        public int num;
+        public Geopoint location;
+        public MapIcon mapIcon;
+        public BasicGeoposition gp;
         public string neighbourhood = "";
         public bool isFavourite = false;
         public bool isVisible = true;
 
-        public Camera(JsonObject jsonObject)
-        {
+        public Camera(JsonObject jsonObject) {
             nameFr = jsonObject.GetNamedString("descriptionFr");
             name = jsonObject.GetNamedString("description");
             type = jsonObject.GetNamedString("type");
@@ -21,8 +22,22 @@ namespace OttawaStreetCameras
                 num += 2000;
             }
             id = (int)jsonObject.GetNamedNumber("id");
-            lng = (double)jsonObject.GetNamedNumber("longitude");
-            lat = (double)jsonObject.GetNamedNumber("latitude");
+
+            gp = new BasicGeoposition {
+                Longitude = jsonObject.GetNamedNumber("longitude"),
+                Latitude = jsonObject.GetNamedNumber("latitude")
+            };
+            location = new Geopoint(gp);
+            mapIcon = new MapIcon {
+                Location = location,
+                Title = GetName(),
+                Tag = this
+            };
+            
+        }
+        public void SetVisibility(bool b) {
+            isVisible = b;
+            mapIcon.Visible = b;
         }
     }
 }

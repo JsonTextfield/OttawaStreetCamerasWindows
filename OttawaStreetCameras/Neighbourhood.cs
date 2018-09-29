@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Data.Json;
 
-namespace OttawaStreetCameras
-{
-    public class Neighbourhood : BilingualObject
-    {
-        private int id;
+namespace OttawaStreetCameras {
+    public class Neighbourhood : BilingualObject {
         private List<List<LatLng>> boundaries = new List<List<LatLng>>();
 
-        public Neighbourhood(JsonObject vals)
-        {
+        public List<Camera> cameras = new List<Camera>();
+
+        public Neighbourhood(JsonObject vals) {
             JsonObject props = vals.GetNamedObject("properties");
             name = props.GetNamedString("Name");
             nameFr = props.GetNamedValue("Name_FR") == null ? name : props.GetNamedValue("Name_FR").ToString();
@@ -37,10 +35,9 @@ namespace OttawaStreetCameras
             }
         }
 
-        public bool ContainsCamera(Camera camera)
-        {
+        public bool ContainsCamera(Camera camera) {
             int intersectCount = 0;
-            LatLng cameraLocation = new LatLng(camera.lat, camera.lng);
+            LatLng cameraLocation = new LatLng(camera.location.Position.Latitude, camera.location.Position.Longitude);
 
             foreach (List<LatLng> vertices in boundaries) {
                 for (int j = 0; j < vertices.Count - 1; j++) {
@@ -52,8 +49,7 @@ namespace OttawaStreetCameras
             return ((intersectCount % 2) == 1); // odd = inside, even = outside
         }
 
-        private bool RayCastIntersect(LatLng location, LatLng vertA, LatLng vertB)
-        {
+        private bool RayCastIntersect(LatLng location, LatLng vertA, LatLng vertB) {
 
             double aY = vertA.latitude;
             double bY = vertB.latitude;

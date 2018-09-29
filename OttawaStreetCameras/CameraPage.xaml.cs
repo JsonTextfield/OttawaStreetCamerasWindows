@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -26,12 +23,11 @@ namespace OttawaStreetCameras {
         }
         public async void getSessionId() {
             HttpClient client = new HttpClient();
-            HttpResponseMessage res = await client.GetAsync("https://traffic.ottawa.ca/map");
+            HttpResponseMessage res = await client.GetAsync("http://traffic.ottawa.ca/map");
 
-            IEnumerable<string> values;
-            if (res.Headers.TryGetValues("Set-Cookie", out values)) {
+            if (res.Headers.TryGetValues("Set-Cookie", out IEnumerable<string> values)) {
                 sessionId = values.First();
-                foreach(Camera camera in cameras) {
+                foreach (Camera camera in cameras) {
                     CameraItem camItem = new CameraItem();
                     camItem.Label.Text = camera.GetName();
                     camItem.Source.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth / 4 - 1;
@@ -61,17 +57,16 @@ namespace OttawaStreetCameras {
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
 
                 getImage(camera, image);
-            }
-            else {
+            } else {
                 Debug.WriteLine(url);
             }
 
         }
-        
+
         protected override void OnNavigatedTo(NavigationEventArgs e) {
             base.OnNavigatedTo(e);
             RUNNING = true;
-            cameras = (List<Camera>) e.Parameter;
+            cameras = (List<Camera>)e.Parameter;
             getSessionId();
 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;

@@ -1,87 +1,153 @@
 ﻿<Page
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:OttawaStreetCameras"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Custom="using:Windows.UI.Xaml.Controls.Maps"
     NavigationCacheMode="Required"
     x:Class="OttawaStreetCameras.MainPage"
     mc:Ignorable="d">
-    <RelativePanel>
 
-        <CommandBar 
-            x:Name="menu"
-            Background="{ThemeResource SystemAccentColor}"
-            RelativePanel.AlignLeftWithPanel="True" 
+    <RelativePanel>
+        <StackPanel
+            Name="stack"
+            RelativePanel.AlignLeftWithPanel="True"
             RelativePanel.AlignRightWithPanel="True"
             RelativePanel.AlignTopWithPanel="True">
-            <AppBarButton 
-                x:Name="openCams"
+
+            
+
+            <CommandBar
                 Visibility="Collapsed"
-                Content="Show cameras"
-                Width="Auto"
-                Height="Auto"
-                Click="Handle_Menu_Click"/>
-            <AppBarSeparator HorizontalAlignment="Center" Height="44" VerticalAlignment="Center" Width="32"/>
+                Name="select_menu"
+                Background="{ThemeResource InkToolbarAccentColorThemeBrush}">
 
-            <AppBarButton
-                Content="Search by neighbourhood"
-                x:Name="neighbourhoodBtn"
-                Width="Auto"
-                Height="Auto"
-                Click="Handle_Menu_Click"/>
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton
+                        Name="openCams"
+                        Label="Show"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_photo_camera_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton
+                        Name="addFav"
+                        Label="Favourite"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_star_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton
+                        Name="hide"
+                        Label="Hide"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_visibility_off_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton 
+                        Name="select_all"
+                        Label="Select all"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/ic_select_all_white_24dp.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton
+                        Name="cancel"
+                        Label="Cancel"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_close_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+            <CommandBar 
+                Name="menu"
+                Background="{ThemeResource InkToolbarAccentColorThemeBrush}">
+                <CommandBar.SecondaryCommands>
+                    <AppBarButton 
+                        Name="sortDistance"
+                        Label="Sort by distance"
+                        Click="Handle_Menu_Click"/>
+                    <AppBarButton 
+                        Name="sortName"
+                        Label="Sort by name"
+                        Click="Handle_Menu_Click"/>
+                    <AppBarButton
+                        Label="Search by neighbourhood"
+                        x:Name="neighbourhoodBtn"
+                        Click="Handle_Menu_Click"/>
+                </CommandBar.SecondaryCommands>
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton
+                        Name="switchBtn"
+                        Label="Switch view"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/ic_swap_horiz_white_24dp.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton 
+                        Label="Favourites"
+                        x:Name="favouriteBtn"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_star_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton 
+                        Name="hiddenBtn"
+                        Label="Hidden"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_visibility_off_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarButton 
+                        Name="random"
+                        Label="Random"
+                        Click="Handle_Menu_Click">
+                        <AppBarButton.Icon>
+                            <BitmapIcon UriSource="ms-appx:///Assets/baseline_shuffle_white_24.png"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                </CommandBar.PrimaryCommands>
 
-            <AppBarSeparator HorizontalAlignment="Center" Height="44" VerticalAlignment="Center" Width="32"/>
-            <AppBarButton 
-                Content="Favourites"
-                x:Name="favouriteBtn"
-                Click="Handle_Menu_Click"
-                Width="Auto"
-                Height="Auto"/>
-            <AppBarSeparator HorizontalAlignment="Center" Height="44" VerticalAlignment="Center" Width="32"/>
-            <AppBarButton 
-                Name="hiddenBtn"
-                Content="Hidden"
-                Width="Auto"
-                Height="Auto"
-                Click="Handle_Menu_Click"/>
-            <AppBarSeparator HorizontalAlignment="Center" Height="44" VerticalAlignment="Center" Width="32"/>
-            <AppBarButton 
-                Name="switchBtn"
-                Content="Switch view"
-                Width="Auto"
-                Height="Auto"
-                Click="Handle_Menu_Click"/>
-            <AppBarSeparator HorizontalAlignment="Center" Height="44" VerticalAlignment="Center" Width="32"/>
-        </CommandBar>
+            </CommandBar>
 
-        <AutoSuggestBox 
-            RelativePanel.Below="menu"
-            Name="searchBox"
-            RelativePanel.AlignLeftWithPanel="True" 
-            RelativePanel.AlignRightWithPanel="True" 
-            SuggestionChosen="AutoSuggestBox_SuggestionChosen"
-            TextChanged="AutoSuggestBox_TextChanged"
-            QueryIcon="Find"/>
+            <AutoSuggestBox
+                        Name="searchBox"
+                        SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                        TextChanged="AutoSuggestBox_TextChanged"
+                        QueryIcon="Find"/>
+        </StackPanel>
 
         <ListView 
+                
             Name="listView"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"
+            RelativePanel.AlignBottomWithPanel="True"
+            RelativePanel.Below="stack"
             IsMultiSelectCheckBoxEnabled="True" 
             SelectionMode="Multiple" 
-            SelectionChanged="listView_SelectionChanged" 
-            RelativePanel.AlignLeftWithPanel="True" 
-            RelativePanel.AlignRightWithPanel="True" 
-            RelativePanel.Below="searchBox"/>
+            SelectionChanged="ListView_SelectionChanged"/>
 
-        <Custom:MapControl 
-            RelativePanel.AlignLeftWithPanel="True" 
-            RelativePanel.AlignRightWithPanel="True" 
-            RelativePanel.Below="searchBox"
-            RelativePanel.AlignBottomWithPanel="True"
+        <Custom:MapControl
             Name="mapView"
+            MapElementClick="MapView_MapElementClick"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"
+            RelativePanel.AlignBottomWithPanel="True"
+            RelativePanel.Below="stack"
             MapServiceToken="mhH5gC4zIdeVUl9fotor~OOGwNPRv2DQd0Y3ThyztTA~AnJwoEaz_5BmEQzVkoLG_jKA73eKgy3zU4tNm-yQlDmDiDDsmqobEBy-X2I-lp4M"
             Visibility="Collapsed"/>
 
+
     </RelativePanel>
+
 </Page>
