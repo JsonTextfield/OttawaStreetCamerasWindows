@@ -11,32 +11,57 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-namespace OttawaStreetCameras {
+namespace OttawaStreetCameras
+{
 
-    public sealed partial class CameraPage : Page {
-        private bool RUNNING;
+    public sealed partial class CameraPage : Page
+    {
+        private bool isRunning;
+        private bool isShuffleOn;
         private string sessionId;
         private List<Camera> cameras;
-        public CameraPage() {
+        private Random random = new Random();
+
+        public CameraPage()
+        {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
         }
-        public async void getSessionId() {
+
+        public async Task getSessionId()
+        {
             HttpClient client = new HttpClient();
             HttpResponseMessage res = await client.GetAsync("http://traffic.ottawa.ca/map");
 
-            if (res.Headers.TryGetValues("Set-Cookie", out IEnumerable<string> values)) {
+            if (res.Headers.TryGetValues("Set-Cookie", out IEnumerable<string> values))
+            {
                 sessionId = values.First();
-                foreach (Camera camera in cameras) {
-                    CameraItem camItem = new CameraItem();
-                    camItem.Label.Text = camera.GetName();
-                    camItem.Source.MaxWidth = cameras.Count < 5 ? 500 : ((Frame)Window.Current.Content).ActualWidth / 4 - 1;
-                    grid.Children.Add(camItem);
-                    getImage(camera, camItem.Source);
-                }
             }
         }
-        public async void getImage(Camera camera, Image image) {
+
+        private CameraView loadCameraView()
+        {
+            CameraView camItem = new CameraView();
+            if (isShuffleOn || cameras.Count < 2)
+            {
+                camItem.Source.MaxHeight = ((Frame)Window.Current.Content).ActualHeight - 1;
+            }
+            else if (cameras.Count() < 4)
+            {
+                camItem.MaxWidth = ((Frame)Window.Current.Content).ActualWidth / cameras.Count - 1;
+            }
+            else
+            {
+                camItem.MaxWidth = ((Frame)Window.Current.Content).ActualWidth / 4 - 1;
+            }
+            grid.Children.Add(camItem);
+            return camItem;
+        }
+
+        public async void getImage(Camera camera, CameraView camView)
+        {
+            Image image = camView.Source;
+            camView.Label.Text = camera.GetName();
             string url = "https://traffic.ottawa.ca/map/camera?id=" + camera.num;
             HttpClient outClient = new HttpClient();
 
@@ -53,34 +78,58 @@ namespace OttawaStreetCameras {
             b.SetSource(randomAccessStream);
 
             image.Source = b;
-            if (RUNNING) {
-                await Task.Delay(TimeSpan.FromMilliseconds(500));
-
-                getImage(camera, image);
-            } else {
+            await Task.Delay(TimeSpan.FromMilliseconds(6000));
+            if (isRunning)
+            {
+                if (isShuffleOn)
+                {
+                    camera = cameras[random.Next(0, cameras.Count)];
+                }
+                getImage(camera, camView);
+            }
+            else
+            {
                 Debug.WriteLine(url);
             }
 
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e) {
-            base.OnNavigatedTo(e);
-            RUNNING = true;
-            cameras = (List<Camera>)e.Parameter;
-            getSessionId();
+        private async void setup()
+        {
+            await getSessionId();
 
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            if (isShuffleOn)
+            {
+                getImage(cameras[random.Next(0, cameras.Count)], loadCameraView());
+            }
+            else
+            {
+                foreach (Camera camera in cameras)
+                {
+                    getImage(camera, loadCameraView());
+                }
+            }
         }
 
-        private void App_BackRequested(object sender, BackRequestedEventArgs e) {
-            RUNNING = false;
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (rootFrame == null)
-                return;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            isRunning = true;
+            cameras = (List<Camera>)((Object[])e.Parameter)[0];
+            isShuffleOn = (bool)((Object[])e.Parameter)[1];
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+            setup();
+        }
 
-            // Navigate back if possible, and if the event has not 
-            // already been handled .
-            if (rootFrame.CanGoBack && e.Handled == false) {
+        private void App_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            isRunning = false;
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (rootFrame == null) return;
+
+            // Navigate back if possible, and if the event has not already been handled.
+            if (rootFrame.CanGoBack && e.Handled == false)
+            {
                 e.Handled = true;
                 rootFrame.GoBack();
             }

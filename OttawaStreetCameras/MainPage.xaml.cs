@@ -22,7 +22,6 @@ namespace OttawaStreetCameras {
         private List<Neighbourhood> neighbourhoods = new List<Neighbourhood>();
         private List<Camera> cameras = new List<Camera>();
         private List<Camera> selectedCameras = new List<Camera>();
-
         private const int maxCameras = int.MaxValue;
 
         public MainPage() {
@@ -40,7 +39,11 @@ namespace OttawaStreetCameras {
                 searchBox.Text = "n: ";
             } else if (button == hiddenBtn) {
                 searchBox.Text = "h: ";
-            } else if (button == addFav) {
+            } else if (button == shuffleBtn) {
+                selectedCameras = cameras;
+                OpenCameras(true);
+            }
+            else if (button == addFav) {
                 foreach (Camera c in selectedCameras) {
                     c.isFavourite = !c.isFavourite;
                 }
@@ -74,7 +77,7 @@ namespace OttawaStreetCameras {
         }
 
         private async void GetNeighbourhoods() {
-            string url = "http://data.ottawa.ca/dataset/302ade92-51ec-4b26-a715-627802aa62a8/resource/f1163794-de80-4682-bda5-b13034984087/download/onsboundariesgen1.shp.json";
+            string url = "https://opendata.arcgis.com/datasets/32fe76b71c5e424fab19fec1f180ec18_0.geojson";
 
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync(url);
@@ -148,8 +151,8 @@ namespace OttawaStreetCameras {
                 }
             }
         }
-        private void OpenCameras() {
-            this.Frame.Navigate(typeof(CameraPage), selectedCameras);
+        private void OpenCameras(bool shuffleOn = false) {
+            Frame.Navigate(typeof(CameraPage), new Object[] { selectedCameras, shuffleOn});
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e) {

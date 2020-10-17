@@ -104,8 +104,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BilingualObject.cs" />
-    <Compile Include="CameraItem.xaml.cs">
-      <DependentUpon>CameraItem.xaml</DependentUpon>
+    <Compile Include="CameraView.xaml.cs">
+      <DependentUpon>CameraView.xaml</DependentUpon>
     </Compile>
     <Compile Include="CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>
@@ -182,7 +182,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="CameraItem.xaml">
+    <Page Include="CameraView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
