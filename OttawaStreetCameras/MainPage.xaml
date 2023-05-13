@@ -70,15 +70,15 @@
                     <AppBarButton
                         Name="sortDistance"
                         Click="Handle_Menu_Click"
-                        Label="Sort by distance" />
+                        x:Uid="SortDistance" />
                     <AppBarButton
                         Name="sortName"
                         Click="Handle_Menu_Click"
-                        Label="Sort by name" />
+                        x:Uid="SortName" />
                     <AppBarButton
                         Name="neighbourhoodBtn"
                         Click="Handle_Menu_Click"
-                        Label="Search by neighbourhood" />
+                        x:Uid="SearchNeighbourhood" />
                     <AppBarButton
                         Name="random"
                         Click="Handle_Menu_Click"
@@ -88,7 +88,7 @@
                     <AppBarButton
                         Name="switchBtn"
                         Click="Handle_Menu_Click"
-                        Label="Switch view">
+                        x:Uid="SwitchView">
                         <AppBarButton.Icon>
                             <BitmapIcon UriSource="ms-appx:///Assets/ic_swap_horiz_white_24dp.png" />
                         </AppBarButton.Icon>
@@ -96,7 +96,7 @@
                     <AppBarButton
                         Name="shuffleBtn"
                         Click="Handle_Menu_Click"
-                        Label="Shuffle">
+                        x:Uid="Shuffle">
                         <AppBarButton.Icon>
                             <BitmapIcon UriSource="ms-appx:///Assets/baseline_shuffle_white_24.png" />
                         </AppBarButton.Icon>
@@ -104,7 +104,7 @@
                     <AppBarButton
                         x:Name="favouriteBtn"
                         Click="Handle_Menu_Click"
-                        Label="Favourites">
+                        x:Uid="Favourites">
                         <AppBarButton.Icon>
                             <BitmapIcon UriSource="ms-appx:///Assets/baseline_star_white_24.png" />
                         </AppBarButton.Icon>
@@ -112,7 +112,7 @@
                     <AppBarButton
                         Name="hiddenBtn"
                         Click="Handle_Menu_Click"
-                        Label="Hidden">
+                        x:Uid="Hidden">
                         <AppBarButton.Icon>
                             <BitmapIcon UriSource="ms-appx:///Assets/baseline_visibility_off_white_24.png" />
                         </AppBarButton.Icon>
